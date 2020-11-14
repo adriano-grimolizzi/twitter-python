@@ -4,11 +4,11 @@ app = Flask(__name__)
 
 @app.route("/tweets")
 def get():
-    tweets = request.get_json()['data']
+    tweets = request.get_json()['tweets']
 
     handleTweets(tweets)
 
-    return 'Hello!'
+    return 'You sent me ' + str(len(tweets)) + ' tweets!'
 
 def handleTweets(tweets):
     for tweet in tweets:
