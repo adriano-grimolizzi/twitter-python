@@ -1,8 +1,10 @@
 from flask import Flask, request
 import random
+from utils import load_model, get_sentiment
 
 app = Flask(__name__)
 
+model = load_model('model.pkl')
 
 @app.route("/tweets", methods = ['POST'])
 def handlePost():
@@ -14,16 +16,16 @@ def handlePost():
 
     return {
         'length': str(len(tweets)),
-        'sentiment': getSentiment(random.randint(0, 2))
+        'sentiment': getSentiment(tweets)
     }
 
 
-def getSentiment(index):
+def getSentiment(tweets):
+    general_sentiment = get_sentiment(tweets, model)
     return {
-        0: 'Mostly Positive',
-        1: 'Neutral',
-        2: 'Mostly Negative'
-    }[index]
+        0: 'Mostly Negative',
+        1: 'Mostly Positive'
+    }[general_sentiment]
 
 
 def logTweets(tweets):
