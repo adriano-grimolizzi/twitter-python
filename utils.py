@@ -14,6 +14,13 @@ from nltk.corpus import stopwords
 from nltk.stem import PorterStemmer
 from nltk.tokenize import TweetTokenizer
 
+GENERAL_SENTIMENTS = {0: 'Mostly Negative',
+                      1: 'Mostly Positive'}
+
+SENTIMENTS = {0: 'Negative',
+              1: 'Positive'}
+
+
 def load_model(filename):
     """ Load pre-trained ML model"""
     
@@ -25,7 +32,6 @@ def process_tweet(tweet):
     """ remove unimportant information in the tweet like URLs, 
     special characters, retweet symbols..."""
     
-    stemmer = PorterStemmer()
     stopwords_english = stopwords.words('english')
         
     # remove hyperlinks, symbols, hashtags, punctuation
@@ -109,13 +115,29 @@ def predict_tweet(tweet, freqs, theta):
 
     return y_pred
 
-def get_sentiment(tweets, model):
+def get_sentiment_label(index):
+    return  SENTIMENTS[index]
+
+def get_general_sentiment_label(index):
+    return  GENERAL_SENTIMENTS[index]
+    
+def get_sentiment(tweets, model, mode):
     predictions = []
     theta, freqs = model
+    details = []
+    
     for tweet in tweets:
-        predictions.append(predict_tweet(tweet, freqs, theta)[0][0]>0.5)
-        
-    return  round(sum(predictions)/len(predictions))
+        predictions.append(predict_tweet(tweet["text"], freqs, theta)[0][0]>0.5)
+        details.append({"id": tweet['id'],
+                        "text": tweet["text"] , 
+                        "sentiment": get_sentiment_label(predictions[-1])})
+    
+    general_sentiment = get_general_sentiment_label(round(sum(predictions)/len(predictions)))
+    
+    if mode == "general":
+        return  general_sentiment
+    else:
+        return general_sentiment, details
     
 
     
