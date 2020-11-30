@@ -6,6 +6,8 @@ WORKDIR /app
 
 RUN pip install -r requirements.txt
 
+RUN python -m nltk.downloader stopwords
+
 ENTRYPOINT ["python"]
 
 CMD ["server.py"]
